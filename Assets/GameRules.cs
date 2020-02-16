@@ -10,13 +10,16 @@ public class GameRules : MonoBehaviour
   
     public GameObject ground;
     public GameObject ball;
-    public Text txt;
+    public Text scoreBoardRed, scoreBoardBlue;
+    int scoreTemp = 0;
     bool round;
     bool roundEnd;
     Canvas canv;
     Vector2 temp;
-    
-    Vector2 startPoint = new Vector2(-4.18f, 0.99f);
+    int ballBounceRed = 0, ballBounceBlue=0;//topun kaç kez sektiğini gösteren.
+    string lastBounce;
+    Vector2 startPoint = new Vector2(-6.18f, 0.99f);
+    Vector2 blueStartPoint = new Vector2(5.59f, 0.99f);
     Rigidbody2D rb;
     
     // Start is called before the first frame update
@@ -30,28 +33,63 @@ public class GameRules : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        Debug.Log(transform.rotation);
+        //Debug.Log(transform.rotation);
+        if (round == false && roundEnd == false && ballBounceRed > 2) //Top kırmızının üstünde 3 kez sekerse.
+        {
+            round = true;  //round sonu.yeni round başlat
+            Debug.Log("Kırmızı top 3 kez sektirdi.");
+            StartCoroutine(resetGame("RedSide"));//yeni round için oyun resetleniyor.
+            
+        }
+
+        else if (round == false && roundEnd == false && ballBounceBlue > 2)
+        {
+            round = true;  //round sonu.yeni round başlat
+            StartCoroutine(resetGame("BlueSide"));//yeni round için oyun resetleniyor.
+            Debug.Log("Mavi top 3 kez sektirdi.");
+        }
     }
     private void OnCollisionEnter2D(Collision2D coll)
     {
 
         Debug.Log("Top " + coll.gameObject.name + "'e çaptı");
-        txt.text = "Naber";
-        if (roundEnd == true)
+        //txt.text = "Naber";
+        if (roundEnd == true)  //oyun resetlendi ve blobby topa çarptı.oyunu başlat.
         {
             roundEnd = false;
             rb.gravityScale = 0.5f;
             rb.freezeRotation = false;
             
         }
-        
-        if (round == false && coll.gameObject.name=="RedSide" && roundEnd==false)
+
+        if(round == false && coll.gameObject.name == "redBlobby" && roundEnd == false)
         {
-            round = true;
-            StartCoroutine(resetGame("RedSide"));
+            ballBounceRed += 1;
+            ballBounceBlue = 0;//red topa değdiği için blue'nın sayısı sıfırlanıyor.
         }
-        
-        
+
+        if (round == false && coll.gameObject.name == "blueBlobby" && roundEnd == false)
+        {
+            ballBounceBlue += 1;
+            ballBounceRed = 0;
+        }
+
+
+        if (round == false && coll.gameObject.name=="RedSide" && roundEnd==false)  //Eğer top red side'a düşerse
+        {
+            round = true;  //round sonu.yeni round başlat
+            StartCoroutine(resetGame("RedSide"));//yeni round için oyun resetleniyor.
+        }
+
+        else if (round == false && coll.gameObject.name == "BlueSide" && roundEnd == false)  //Eğer top red side'a düşerse
+        {
+            round = true;  
+            StartCoroutine(resetGame("BlueSide"));
+        }
+
+
+
+
     }
     void resetBallPosition()
     {
@@ -59,33 +97,64 @@ public class GameRules : MonoBehaviour
     }
 
 
-    IEnumerator resetGame(string side)
-    {        
-        if (side=="RedSide")
+    IEnumerator resetGame(string side)  //Skor yapan oyuncuya puan verir ve oyunu 3 saniyeliğine duraklatır.3 saniye sonunda topu 
+    {                                   //default konuma koyar.
+        if (side=="RedSide") //Red side aleyhine sayı olursa.
         {
             Debug.Log("Bekleme başladı.");
             yield return new WaitForSeconds(3);  //3 saniye bekle
             Debug.Log("Mavi puan kazandı!");
             Debug.Log("Puan Ekle Topu yerleştir.");
-            rb.gravityScale = 0;
+            rb.gravityScale = 0; //Yeni oyun başlarken topun havada asılı kalması için.
             rb.velocity = Vector3.zero;
-            //transform.rotation = Quaternion.identity;
+            
             rb.freezeRotation = true;
             transform.position = startPoint;
-            roundEnd = true;
+            roundEnd = true;  
             round = false;
+            
+            score("Blue");//top red side'a düştüğü için blue'ya puan veriyoruz.
+            ballBounceRed = 0;
             
         }
         
-        else if(side =="BlueSide")
+        else if(side =="BlueSide")  //Blue side lehine sayı olduğunda
         {
-            yield return new WaitForSeconds(3);
+            Debug.Log("Bekleme başladı.");
+            yield return new WaitForSeconds(3);  //3 saniye bekle
             Debug.Log("Kırmızı puan kazandı!");
-            Debug.Log(round);
+            Debug.Log("Puan Ekle Topu yerleştir.");
+            rb.gravityScale = 0; //Yeni oyun başlarken topun havada asılı kalması için.
+            rb.velocity = Vector3.zero;
+            
+            rb.freezeRotation = true;
+            transform.position = blueStartPoint;
+            roundEnd = true;
+            round = false;
+            score("Red");//top red side'a düştüğü için blue'ya puan veriyoruz.
+            ballBounceBlue = 0;
         }
+
+       
+
+    }//Reset game sonu
+
+    void score(string side)
+    {
+        if (side == "Red") //Red side a puan yaz
+        {
+            scoreTemp = int.Parse(scoreBoardRed.text);
+            scoreTemp += 1;
+            scoreBoardRed.text = scoreTemp.ToString();
+        }
+        else if (side == "Blue")
+        {
+            scoreTemp = int.Parse(scoreBoardBlue.text);
+            scoreTemp += 1;
+            scoreBoardBlue.text = scoreTemp.ToString();
+        }
+        
     }
-
-
    
 
 

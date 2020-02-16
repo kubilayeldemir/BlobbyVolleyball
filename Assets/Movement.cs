@@ -45,25 +45,6 @@ public class Movement : MonoBehaviour
 
   
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     //-------------------
 
     /*rb = GetComponent<Rigidbody2D>();
