@@ -25,11 +25,11 @@ public class Movement : MonoBehaviour
     {
 
 
-        horizontalMove = Input.GetAxisRaw("Horizontal") * runSpeed;
+        horizontalMove = Input.GetAxisRaw("Horizontal") * runSpeed; //Klavyeden sağ sol hareketleri alıyor run speedle hesaplıyor.
 
-        if (Input.GetButtonDown("Jump"))
+        if (Input.GetButtonDown("Jump"))  //karakter zıplama tuşuna basarsa jump true oluyor aşşağıda kodda kullanılıyor.
         {
-            jump = true;
+            jump = true;                  
         }
 
         /*if (Input.GetButtonDown("Crouch"))
@@ -43,7 +43,14 @@ public class Movement : MonoBehaviour
 
     }
 
-  
+    void FixedUpdate()
+    {
+        // Move our character
+        //Debug.Log(horizontalMove + "-" + horizontalMove * Time.fixedDeltaTime);
+        controller.Move(horizontalMove * Time.fixedDeltaTime, crouch, jump);   //CharacterController2D ye inputları gönderiyoruz.
+        jump = false; //Zıplama bitmesi için false deniliyor.
+    }
+
 
     //-------------------
 
@@ -62,29 +69,24 @@ public class Movement : MonoBehaviour
 
 
 
-void FixedUpdate()
-{
-    // Move our character
-    controller.Move(horizontalMove * Time.fixedDeltaTime, crouch, jump);
-    jump = false;
-}
 
 
 
-/*private void FixedUpdate()
-    {
 
-        rb = GetComponent<Rigidbody2D>();
-        transform.Translate(Input.GetAxis("Horizontal") * 7 * Time.deltaTime, 0f, 0f);
-        //transform.Translate(0f, Input.GetAxis("Vertical") * 20* Time.deltaTime, 0f);
-        Debug.Log(Input.GetAxis("Vertical"));
-
-        if (Input.GetAxisRaw("Vertical") > 0f)
+    /*private void FixedUpdate()
         {
-            rb.AddForce(jmpForce * Time.deltaTime);
 
-        }
-    }*/
+            rb = GetComponent<Rigidbody2D>();
+            transform.Translate(Input.GetAxis("Horizontal") * 7 * Time.deltaTime, 0f, 0f);
+            //transform.Translate(0f, Input.GetAxis("Vertical") * 20* Time.deltaTime, 0f);
+            Debug.Log(Input.GetAxis("Vertical"));
+
+            if (Input.GetAxisRaw("Vertical") > 0f)
+            {
+                rb.AddForce(jmpForce * Time.deltaTime);
+
+            }
+        }*/
 
 
 }

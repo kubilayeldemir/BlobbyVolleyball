@@ -10,6 +10,7 @@ public class GameRules : MonoBehaviour
   
     public GameObject ground;
     public GameObject ball;
+    public GameObject OppenentsAIObject;
     public Text scoreBoardRed, scoreBoardBlue;
     int scoreTemp = 0;
     bool round;
@@ -21,6 +22,7 @@ public class GameRules : MonoBehaviour
     Vector2 startPoint = new Vector2(-6.18f, 0.99f);
     Vector2 blueStartPoint = new Vector2(5.59f, 0.99f);
     Rigidbody2D rb;
+    OpponentAI opTemp;
     
     // Start is called before the first frame update
     void Start()
@@ -28,15 +30,22 @@ public class GameRules : MonoBehaviour
         round = false;
         rb = GetComponent<Rigidbody2D>();
 
+        //opTemp = OppenentsAIObject.GetComponent<OpponentAI>();
+        
+
     }
 
     // Update is called once per frame
     void Update()
     {
+
+        //Debug.Log("GR round:" + round + "roundEnd:" + roundEnd);
+
         //Debug.Log(transform.rotation);
         if (round == false && roundEnd == false && ballBounceRed > 2) //Top kırmızının üstünde 3 kez sekerse.
         {
             round = true;  //round sonu.yeni round başlat
+            //opTemp.round = true;            
             Debug.Log("Kırmızı top 3 kez sektirdi.");
             StartCoroutine(resetGame("RedSide"));//yeni round için oyun resetleniyor.
             
@@ -45,6 +54,8 @@ public class GameRules : MonoBehaviour
         else if (round == false && roundEnd == false && ballBounceBlue > 2)
         {
             round = true;  //round sonu.yeni round başlat
+            //opTemp.round = true;
+            
             StartCoroutine(resetGame("BlueSide"));//yeni round için oyun resetleniyor.
             Debug.Log("Mavi top 3 kez sektirdi.");
         }
@@ -57,6 +68,7 @@ public class GameRules : MonoBehaviour
         if (roundEnd == true)  //oyun resetlendi ve blobby topa çarptı.oyunu başlat.
         {
             roundEnd = false;
+            //opTemp.roundEnd = false;
             rb.gravityScale = 0.5f;
             rb.freezeRotation = false;
             
@@ -78,6 +90,7 @@ public class GameRules : MonoBehaviour
         if (round == false && coll.gameObject.name=="RedSide" && roundEnd==false)  //Eğer top red side'a düşerse
         {
             round = true;  //round sonu.yeni round başlat
+            //opTemp.round = true;
             StartCoroutine(resetGame("RedSide"));//yeni round için oyun resetleniyor.
         }
 
@@ -99,6 +112,7 @@ public class GameRules : MonoBehaviour
 
     IEnumerator resetGame(string side)  //Skor yapan oyuncuya puan verir ve oyunu 3 saniyeliğine duraklatır.3 saniye sonunda topu 
     {                                   //default konuma koyar.
+        
         if (side=="RedSide") //Red side aleyhine sayı olursa.
         {
             Debug.Log("Bekleme başladı.");
@@ -110,8 +124,10 @@ public class GameRules : MonoBehaviour
             
             rb.freezeRotation = true;
             transform.position = startPoint;
-            roundEnd = true;  
+            roundEnd = true;
+            //opTemp.roundEnd = true;
             round = false;
+            //opTemp.round = false;
             
             score("Blue");//top red side'a düştüğü için blue'ya puan veriyoruz.
             ballBounceRed = 0;
@@ -130,7 +146,9 @@ public class GameRules : MonoBehaviour
             rb.freezeRotation = true;
             transform.position = blueStartPoint;
             roundEnd = true;
+            //opTemp.roundEnd = false;
             round = false;
+            //opTemp.round = false;
             score("Red");//top red side'a düştüğü için blue'ya puan veriyoruz.
             ballBounceBlue = 0;
         }
@@ -143,7 +161,7 @@ public class GameRules : MonoBehaviour
     {
         if (side == "Red") //Red side a puan yaz
         {
-            scoreTemp = int.Parse(scoreBoardRed.text);
+            scoreTemp = int.Parse(scoreBoardRed.text);            
             scoreTemp += 1;
             scoreBoardRed.text = scoreTemp.ToString();
         }
@@ -155,7 +173,14 @@ public class GameRules : MonoBehaviour
         }
         
     }
-   
 
+    public bool getRound()
+    {
+        return round;
+    }
+    public bool getRoundEnd()
+    {
+        return roundEnd;
+    }
 
 }
